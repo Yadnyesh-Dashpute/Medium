@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Appbar } from "../Components/Appbar";
 import { BlogCard } from "../Components/Blogcard";
 import { BACKEND_URL } from "../pages/Config";
+import { BlogSkeleton } from "../Components/BlogSkeleton";
 
 
 export interface Blog {
@@ -33,13 +34,16 @@ export const Blogs = () => {
                 setLoading(false);
             }
         }
-
         getBlogs()
     }, [])
-
     if (loading) {
-        return <div>Loading.....</div>;
-    }
+        return <div>
+            <BlogSkeleton/>
+            <BlogSkeleton/>
+            <BlogSkeleton/>
+            <BlogSkeleton/>
+            </div>;
+    } 
     return (
         <>
         <Appbar />
