@@ -14,21 +14,30 @@ export interface Blog {
 }
 
 export const Blog = () => {
+    const [loading,setLoading] = useState(false);
     const [blog, setBlog] = useState<Blog>();
-    const id = useParams();
+    const {id} = useParams<{id:string}>();
     useEffect(() => {
-        async function useBlog({ id }: { id: string }) {
-            const res = await fetch(`${BACKEND_URL}/api/v1/blog/${id}`, {
+        async function useBlog(blogId : string ) {
+            const res = await fetch(`${BACKEND_URL}/api/v1/blog/${blogId}`, {
                 headers: { 
                     Authorization: localStorage.getItem("token") || "",
                 },
             });
             const json = await res.json();
             setBlog(json.blog);
+            setLoading(false)
         }
-
-        useBlog(id);
+        if(id){
+            useBlog(id);
+        }
     }, [id]);
+
+    if(loading || !blog){
+        return <div>
+            Loading..;
+        </div>
+    }
 
     return (
         <>

@@ -1,5 +1,5 @@
 import { Appbar } from "./Appbar"
-
+import { Blog } from "../pages/Blog"
 
 export const FullBlog = ({blog}: {blog:Blog}) => {
     return <div>
