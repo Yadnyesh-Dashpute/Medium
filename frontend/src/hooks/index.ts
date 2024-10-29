@@ -4,14 +4,40 @@ import { BACKEND_URL } from "../pages/Config";
 
 
 export interface Blog {
-    content:string;
-    title:string;
-    id:string;
-    author: {
-        name:string
+    "id":string;
+    "title":string;
+    "content":string;
+    "author": {
+        "name":string
     }
 
 }
+
+export const useBlog = ({ id } : { id:string }) => {
+    const [loading,setLoading] = useState(true);
+    const [blog, setBlog] = useState<Blog>();
+    
+    useEffect( () => {
+        axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
+            headers: {
+                Authorization: localStorage.getItem("token")
+            }
+        })
+            .then(response => {
+            setBlog(response.data.blog);
+            setLoading(false);
+        })
+    }, [id])
+
+    return {
+        loading,
+        blog
+    }
+
+}
+
+
+
 
 export const useBlogs = () => {
     const [loading,setLoading] = useState(true);
@@ -24,7 +50,6 @@ export const useBlogs = () => {
             }
         })
             .then(response => {
-            console.log("API Response:", response.data);
             setBlogs(response.data.blogs);
             setLoading(false);
         })
@@ -34,6 +59,8 @@ export const useBlogs = () => {
         loading,
         blogs
     }
+
+
 
 
 }

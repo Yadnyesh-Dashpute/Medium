@@ -1,65 +1,64 @@
 import { useEffect, useState } from "react";
 import { Appbar } from "../Components/Appbar";
 import { BlogCard } from "../Components/Blogcard";
-import axios from "axios";
 import { BACKEND_URL } from "../pages/Config";
 
-// import { useBlogs } from "../hooks";
 
 export interface Blog {
-    content:string;
-    title:string;
-    id:string;
-    author: {
-        name:string
+    content: string;
+    title: string;
+    id: string;
+    author?: {
+        name?: string
     }
-
 }
 
 export const Blogs = () => {
-    // const { loading, blogs } = useBlogs();
-    const [loading,setLoading] = useState(true);
-    const [blogs, setBlogs] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [blogs, setBlogs] = useState<Blog[]>([]);
 
-    useEffect( () => {
-        axios.get(`${BACKEND_URL}/api/v1/blog/bulk`, {
-            headers: {
-                Authorization: localStorage.getItem("token")
+    useEffect(() => {
+
+        async function getBlogs() {
+            const res = await fetch(`${BACKEND_URL}/api/v1/blog/bulk`, {
+                headers: {
+                    Authorization: localStorage.getItem("token") || ""
+                }
+            })
+            const json = await res.json();
+            console.log(json)
+            setBlogs(json.blog)
+            console.log('blog', blogs)
+            if (blogs.length > 0) {
+                setLoading(false);
             }
-        })
-            .then(response => {
-            console.log("API Response:", response.data);
-            setBlogs(response.data.blog);
-            console.log(blogs)
-            setLoading(false);
-        })
+        }
+
+        getBlogs()
     }, [])
+
     if (loading) {
         return <div>Loading.....</div>;
     }
-
-
     return (
         <>
-            <Appbar />
-            <div className="flex justify-center">
-                <div>
+        <Appbar />
+        <div className="flex justify-center">
+      <div className="max-w-xl">
+        {
+            blogs && blogs.map(blog => (
+                <BlogCard
+                            id= { blog.id }
+                            authorName = { blog.author && blog.author.name ? blog.author.name : "Anonymous" }
+                            title = { blog.title }
+                            content = { blog.content }
+                            publishedDate = { "2nd Feb 2024"}
+                />
+                    ))
+}
 
-                    {/* {blogs && blogs.map(blog => (
-                            <BlogCard
-
-                                authorName={blog.author.name || "Anonymous"}
-                                title={blog.title}
-                                content={blog.content}
-                                publishedDate={"2nd Feb 2024"}
-                            />
-                        ))
-                    } */}
-                    {
-                        blogs
-                    }
-                </div>
-            </div>
-        </>
-    );
+</div>
+</div>
+    </>
+);
 };
